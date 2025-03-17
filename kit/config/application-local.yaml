@@ -1,0 +1,29 @@
+# Default properties file for global environment
+router:
+  port: '8084'
+  name: 'tweets-service'
+
+log:
+  level: debug
+  path: '/tweets-service.log'
+
+aws:
+  region: 'us-east-1'
+
+dynamo:
+  endpoint: 'http://localhost:4566'
+
+sqs:
+  endpoint: 'http://localhost:4566'
+
+repositories:
+  database:
+    table: 'UalaChallenge'
+
+cases:
+  store:
+    topic: 'arn:aws:sns:us-east-1:000000000000:uala-challenge'
+    retries: 3
+    table: 'UalaChallenge'
+  retrieve:
+    table: 'UalaChallenge'

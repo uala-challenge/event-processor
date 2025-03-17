@@ -1,0 +1,25 @@
+# Properties file for docker test
+router:
+  port: '8080'
+  name: 'tweets-service'
+
+log:
+  level: debug
+  path: '/tweets-service.log'
+
+aws:
+  region: 'us-east-1'
+
+dynamo:
+  endpoint: 'http://localstack:4566'
+
+sns:
+  endpoint: 'http://localstack:4566'
+
+cases:
+  store:
+    topic: 'arn:aws:sns:us-east-1:000000000000:uala-challenge'
+    retries: 3
+    table: 'UalaChallenge'
+  retrieve:
+    table: 'UalaChallenge'
