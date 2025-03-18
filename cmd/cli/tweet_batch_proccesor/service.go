@@ -2,10 +2,11 @@ package tweet_batch_proccesor
 
 import (
 	"context"
-	"github.com/uala-challenge/event-processor/internal/platfrom/consume_tweet_event_sqs"
-	"github.com/uala-challenge/event-processor/internal/task_manager"
 	"log"
 	"time"
+
+	"github.com/uala-challenge/event-processor/internal/platfrom/consume_tweet_event_sqs"
+	"github.com/uala-challenge/event-processor/internal/task_manager"
 )
 
 type Runner struct {
@@ -17,14 +18,14 @@ type Runner struct {
 	retries     int
 }
 
-func NewRunner(processor consume_tweet_event_sqs.Service, taskManager task_manager.Manager, queueURL string) *Runner {
+func NewRunner(d Dependencies) *Runner {
 	return &Runner{
-		processor:   processor,
-		taskManager: taskManager,
-		queueURL:    queueURL,
+		processor:   d.Processor,
+		taskManager: d.TaskManager,
+		queueURL:    d.Config.Endpoint,
 		batchSize:   10,
-		numWorkers:  5,
-		retries:     3,
+		numWorkers:  2,
+		retries:     1,
 	}
 }
 

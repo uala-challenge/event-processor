@@ -2,6 +2,10 @@ package consume_tweet_event_sqs
 
 import (
 	"context"
+	"encoding/json"
+
+	"github.com/uala-challenge/event-processor/internal/platfrom/tweet_proccesor"
+	"github.com/uala-challenge/event-processor/kit"
 
 	"github.com/aws/aws-sdk-go-v2/service/sqs"
 	"github.com/aws/aws-sdk-go-v2/service/sqs/types"
@@ -16,19 +20,22 @@ type Service interface {
 }
 
 type service struct {
-	client *sqs2.Sqs
-	log    log.Service
+	client    *sqs2.Sqs
+	processor tweet_proccesor.Service
+	log       log.Service
 }
 
 type Dependencies struct {
-	Client *sqs2.Sqs
-	Log    log.Service
+	Client    *sqs2.Sqs
+	Log       log.Service
+	Processor tweet_proccesor.Service
 }
 
 func NewService(d Dependencies) *service {
 	return &service{
-		client: d.Client,
-		log:    d.Log,
+		client:    d.Client,
+		log:       d.Log,
+		processor: d.Processor,
 	}
 }
 
@@ -36,7 +43,8 @@ func (s *service) ReceiveMessages(ctx context.Context, queueURL string, batchSiz
 	input := &sqs.ReceiveMessageInput{
 		QueueUrl:            &queueURL,
 		MaxNumberOfMessages: int32(batchSize),
-		WaitTimeSeconds:     5,
+		WaitTimeSeconds:     20,
+		VisibilityTimeout:   120,
 	}
 
 	resp, err := s.client.Cliente.ReceiveMessage(ctx, input)
@@ -62,8 +70,15 @@ func (s *service) DeleteMessage(ctx context.Context, queueURL, receiptHandle str
 }
 
 func (s *service) ProcessMessage(ctx context.Context, message string) error {
-	s.log.Info(ctx, "Procesando mensaje:", map[string]interface{}{
-		"message": message,
-	})
+
+	var tweet kit.Tweet
+	err := json.Unmarshal([]byte(message), &tweet)
+	if err != nil {
+		return s.log.WrapError(err, "Error deserializando mensaje")
+	}
+	err = s.processor.Accept(ctx, tweet)
+	if err != nil {
+		return s.log.WrapError(err, "Error procesando mensaje")
+	}
 	return nil
 }

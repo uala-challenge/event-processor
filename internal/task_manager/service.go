@@ -7,6 +7,10 @@ import (
 	"github.com/uala-challenge/simple-toolkit/pkg/utilities/task_executor"
 )
 
+type Service interface {
+	ExecuteTasks(ctx context.Context, messages []types.Message) map[string]task_executor.Result
+}
+
 type Manager struct {
 	numWorkers int
 	processFn  func(ctx context.Context, input string) error

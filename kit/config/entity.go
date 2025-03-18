@@ -1,11 +1,9 @@
 package config
 
 import (
-	"github.com/uala-challenge/tweets-service/internal/retrieve_tweet"
-	"github.com/uala-challenge/tweets-service/internal/store_tweet"
+	"github.com/uala-challenge/event-processor/cmd/cli/tweet_batch_proccesor"
 )
 
-type UsesCasesConfig struct {
-	Store    store_tweet.Config    `json:"store"`
-	Retrieve retrieve_tweet.Config `json:"retrieve"`
+type BatchConfig struct {
+	Tweets tweet_batch_proccesor.Config `json:"tweets"`
 }
